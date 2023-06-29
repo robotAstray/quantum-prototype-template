@@ -10,6 +10,8 @@ This workflow checks that the code is formatted properly and follows the style g
 
 This workflow installs the latest version of tox and runs [the current repository's tests](/tests/#test-py-environments) under each supported Python version on Linux and under a single Python version on macOS and Windows.  This is the primary testing workflow.  It runs for all code changes and additionally once per day, to ensure tests continue to pass as new versions of dependencies are released.
 
+Under the hood, this workflow uses a regular expression to change each `>=` and `~=` specifier in the requirements files to instead be `==`, as pip [does not support](https://github.com/pypa/pip/issues/8085) resolving the minimum versions of packages directly.  Unfortunately, this means that the workflow will only install the minimum version of a package if it is _explicitly_ listed in one of the requirements files with a minimum version.  For instance, a requirements file that simply lists `qiskit>=0.34` will actually install `qiskit==0.34` (i.e., the minimum version of the _meta_-package) along with the latest versions of `qiskit-terra` and `qiskit-aer`, unless their minimum versions are specified explicitly as well. -->
+
 ## Code coverage (`coverage.yml`)
 
 This workflow tests the [coverage environment](/tests/#coverage-environment) on a single version of Python by installing tox and running `tox -ecoverage`.
